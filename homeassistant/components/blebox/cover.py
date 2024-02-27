@@ -21,6 +21,22 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from . import BleBoxEntity
 from .const import DOMAIN, PRODUCT
 
+# note: this is primary mapping of cover types
+BLEBOX_UNIFIED_COVER_TYPE_TO_DEVICE_CLASSES = {
+    blebox_uniapi.cover.UnifiedCoverType.AWNING: CoverDeviceClass.AWNING,
+    blebox_uniapi.cover.UnifiedCoverType.BLIND: CoverDeviceClass.BLIND,
+    blebox_uniapi.cover.UnifiedCoverType.CURTAIN: CoverDeviceClass.CURTAIN,
+    blebox_uniapi.cover.UnifiedCoverType.DAMPER: CoverDeviceClass.DAMPER,
+    blebox_uniapi.cover.UnifiedCoverType.DOOR: CoverDeviceClass.DOOR,
+    blebox_uniapi.cover.UnifiedCoverType.GARAGE: CoverDeviceClass.GARAGE,
+    blebox_uniapi.cover.UnifiedCoverType.GATE: CoverDeviceClass.GATE,
+    blebox_uniapi.cover.UnifiedCoverType.SHADE: CoverDeviceClass.SHADE,
+    blebox_uniapi.cover.UnifiedCoverType.SHUTTER: CoverDeviceClass.SHUTTER,
+    blebox_uniapi.cover.UnifiedCoverType.WINDOW: CoverDeviceClass.WINDOW,
+}
+
+# ... but in case we see cover type that is unknown to us, let's use
+# a simple fallback by blebox device class
 BLEBOX_TO_COVER_DEVICE_CLASSES = {
     "gate": CoverDeviceClass.GATE,
     "gatebox": CoverDeviceClass.DOOR,
@@ -62,9 +78,12 @@ class BleBoxCoverEntity(BleBoxEntity[blebox_uniapi.cover.Cover], CoverEntity):
     def __init__(self, feature: blebox_uniapi.cover.Cover) -> None:
         """Initialize a BleBox cover feature."""
         super().__init__(feature)
-        self._attr_device_class = BLEBOX_TO_COVER_DEVICE_CLASSES[feature.device_class]
+        self._attr_device_class = BLEBOX_UNIFIED_COVER_TYPE_TO_DEVICE_CLASSES.get(
+            feature.cover_type, BLEBOX_TO_COVER_DEVICE_CLASSES[feature.device_class],
+        )
         position = CoverEntityFeature.SET_POSITION if feature.is_slider else 0
         stop = CoverEntityFeature.STOP if feature.has_stop else 0
+
         self._attr_supported_features = (
             position | stop | CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE
         )
