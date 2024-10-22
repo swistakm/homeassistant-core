@@ -20,7 +20,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DEFAULT_SETUP_TIMEOUT, DOMAIN, PRODUCT
-from .dashboards import async_create_energy_dashboards
+from .dashboards import async_create_smart_meter_dashboards
 from .helpers import get_maybe_authenticated_session
 
 _LOGGER = logging.getLogger(__name__)
@@ -41,7 +41,9 @@ PARALLEL_UPDATES = 0
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up BleBox integration."""
     hass.services.async_register(
-        DOMAIN, "setup_dashboards", partial(async_create_energy_dashboards, hass=hass)
+        DOMAIN,
+        "setup_dashboards",
+        partial(async_create_smart_meter_dashboards, hass=hass),
     )
 
     return True
