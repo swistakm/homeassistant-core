@@ -17,6 +17,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DEFAULT_SETUP_TIMEOUT, DOMAIN, PRODUCT
@@ -35,6 +36,7 @@ PLATFORMS = [
     Platform.SWITCH,
 ]
 
+CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
 PARALLEL_UPDATES = 0
 
 
