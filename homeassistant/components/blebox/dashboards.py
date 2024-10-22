@@ -29,9 +29,8 @@ async def async_create_smart_meter_dashboards(
     """Automatically create dashboards for all smartMeter devices."""
     registry = er.async_get(hass)
 
+    config_entry: ConfigEntry
     for config_entry in hass.config_entries.async_entries(DOMAIN):
-        config_entry: ConfigEntry
-
         product_map = hass.data[DOMAIN].get(config_entry.entry_id, {})
         product = product_map.get("product")
 
@@ -75,7 +74,8 @@ def smartmeter_dashboard_config(
     hass: HomeAssistant, registry_entries: list[RegistryEntry]
 ):
     """Create multi-tab smartMeter dashboard configuration."""
-    from .sensor import BleBoxSensorEntity  # avoid circular imports
+    # avoid circular imports
+    from .sensor import BleBoxSensorEntity  # pylint: disable=import-outside-toplevel
 
     sensor_component: EntityComponent[sensor.SensorEntity] = hass.data[sensor.DOMAIN]
 
